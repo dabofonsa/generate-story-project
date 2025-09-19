@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
@@ -17,39 +16,27 @@ class StoryGenerator:
 
     @classmethod
     def _get_llm(cls):
-        // sample nodeJS code snippet
-        string openai_api_key = os:getEnv("CHOREO_OPENAIAPI_CONNECTION_OPENAI_API_KEY")
-        string serviceurl = os:getEnv("CHOREO_OPENAIAPI_CONNECTION_SERVICEURL")
+        openai_api_key = os.getenv("CHOREO_OPENAIAPI_CONNECTION_OPENAI_API_KEY")
+        serviceurl = os.getenv("CHOREO_OPENAIAPI_CONNECTION_SERVICEURL")
 
-
-        # openai_api_key = os.getenv("CHOREO_OPENAI_CONNECTION_OPENAI_API_KEY")
-        # serviceurl = os.getenv("CHOREO_OPENAI_CONNECTION_SERVICEURL")
-        
         if openai_api_key and serviceurl:
             return ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key, base_url=serviceurl)
         
         return ChatOpenAI(model="gpt-4o-mini")
-        
-       
+
     @classmethod
-    def generate_story(cls, db: Session, session_id: str, theme: str ="fantasy")-> Story:
+    def generate_story(cls, db: Session, session_id: str, theme: str = "fantasy") -> Story:
         llm = cls._get_llm()
         story_parser = PydanticOutputParser(pydantic_object=StoryLLMResponse)
         prompt = ChatPromptTemplate.from_messages([
-            (
-             "system", 
-             STORY_PROMPT
-            ),
-            (
-             "human", 
-             f"Create the story with this theme: {theme}"
-            )
+            ("system", STORY_PROMPT),
+            ("human", f"Create the story with this theme: {theme}")
         ]).partial(format_instructions=story_parser.get_format_instructions())
         
         raw_response = llm.invoke(prompt.invoke({}))
         
         response_text = raw_response
-        if hasattr(raw_response, 'content'):
+        if hasattr(raw_response, "content"):
             response_text = raw_response.content
            
         story_structure = story_parser.parse(response_text)
@@ -71,16 +58,16 @@ class StoryGenerator:
     def _process_story_node(cls, db: Session, story_id: int, node_data: StoryNodeLLM, is_root: bool = False) -> StoryNode:
         node = StoryNode(
             story_id=story_id,
-            content=node_data.content if hasattr(node_data, 'content') else node_data["content"],
-            is_toot=is_root,
-            is_ending=node_data.isWinningEnding if hasattr(node_data, 'isWinningEnding') else node_data["isWinningEnding"],
+            content=node_data.content if hasattr(node_data, "content") else node_data["content"],
+            is_root=is_root,
+            is_ending=node_data.isWinningEnding if hasattr(node_data, "isWinningEnding") else node_data["isWinningEnding"],
             options=[]  
         )
         db.add(node)
         db.flush()
 
-        if not node.is_ending and (hasattr(node_data, "options") and node_dat.options):
-            options_list = []
+        options_list = []
+        if not node.is_ending and (hasattr(node_data, "options") and node_data.options):
             for option_data in node_data.options:
                 next_node = option_data.nextNode
                 
@@ -89,7 +76,7 @@ class StoryGenerator:
                 
                 child_node = cls._process_story_node(db, story_id, next_node, False)                      
                 
-                options_list = append({
+                options_list.append({
                     "text": option_data.text,
                     "node_id": child_node.id
                 })
@@ -97,4 +84,4 @@ class StoryGenerator:
         node.options = options_list
     
         db.flush()
-        return node         
+        return node
