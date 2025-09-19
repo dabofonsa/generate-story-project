@@ -10,8 +10,7 @@ export default defineConfig((command, mode) => {
   return {
     plugins: [react()],
     server: {
-      ...command(
-        env.VITE_DEBUG === "true" && {
+      ...(env.VITE_DEBUG === "true" && {
           proxy: {
             "/api'": {
               target: "http://localhost:8000",
