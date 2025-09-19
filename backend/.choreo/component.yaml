@@ -11,5 +11,7 @@ endpoint:
     - Public
 dependencies:
     connectionReferences:
-    - name: openai-connection-story-generator
-      resourceRef: thirdparty:openai/v1
+    - name: openaiapi-connection
+      resourceRef: thirdparty:openai-key-story-generator/v1
+
+      

@@ -17,8 +17,10 @@ class StoryGenerator:
 
     @classmethod
     def _get_llm(cls):
-        openai_api_key = os:getEnv("CHOREO_OPENAI_CONNECTION_STORY_GENERATOR_OPENAI_API_KEY");
-        serviceurl = os:getEnv("CHOREO_OPENAI_CONNECTION_STORY_GENERATOR_SERVICEURL");
+        // sample nodeJS code snippet
+        string openai_api_key = os:getEnv("CHOREO_OPENAIAPI_CONNECTION_OPENAI_API_KEY")
+        string serviceurl = os:getEnv("CHOREO_OPENAIAPI_CONNECTION_SERVICEURL")
+
 
         # openai_api_key = os.getenv("CHOREO_OPENAI_CONNECTION_OPENAI_API_KEY")
         # serviceurl = os.getenv("CHOREO_OPENAI_CONNECTION_SERVICEURL")
